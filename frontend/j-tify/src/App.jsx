@@ -1,6 +1,6 @@
 import React from "react";
 import SongList from "./components/SongList";
-import "./index.css";
+import "./styles/index.css";
 
 const App = () => {
     return (

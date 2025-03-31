@@ -1,14 +1,15 @@
 import React from "react";
-import "../styles/songcard.css";
 
-function SongCard({ song }) {
+const SongItem = ({ song }) => {
     return (
-        <div className="song-card">
-            <img src={song.albumImage} alt={song.name} />
-            <h5>{song.name}</h5>
-            <p>{song.artist}</p>
+        <div className="song-item">
+            <img src={song.albumImageUrl} alt={song.name} />
+            <div className="song-info">
+                <h3>{song.name}</h3>
+                <p>{song.artist}</p>
+            </div>
         </div>
     );
-}
+};
 
-export default SongCard;
+export default SongItem;
