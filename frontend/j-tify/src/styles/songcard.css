@@ -1,0 +1,27 @@
+.song-card {
+    width: 200px;
+    background: #1e1e1e;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    transition: transform 0.2s;
+}
+
+.song-card:hover {
+    transform: scale(1.05);
+}
+
+.song-card img {
+    width: 100%;
+    border-radius: 8px;
+}
+
+.song-card h5 {
+    font-size: 16px;
+    margin: 10px 0 5px;
+}
+
+.song-card p {
+    font-size: 14px;
+    color: #bbb;
+}
