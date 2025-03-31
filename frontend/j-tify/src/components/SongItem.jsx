@@ -1,4 +1,5 @@
 import React from "react";
+import "../styles/songItem.css";
 
 const SongItem = ({ song }) => {
     return (

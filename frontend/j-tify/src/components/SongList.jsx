@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { fetchJPopSongs } from "../api";
 import SongItem from "./SongItem";
+import "../styles/songList.css";
 
 const SongList = () => {
     const [songs, setSongs] = useState([]);

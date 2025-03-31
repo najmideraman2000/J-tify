@@ -1,14 +1,4 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-}
-
+/* Main Application Container */
 .app-container {
     width: 400px;
     background: white;
@@ -16,42 +6,10 @@ body {
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
     padding: 20px;
     text-align: center;
+    margin: 50px auto;
 }
 
 h2 {
     color: #333;
-}
-
-.song-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.song-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: #fff;
-    padding: 10px;
-    border-radius: 8px;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.song-item img {
-    width: 60px;
-    height: 60px;
-    border-radius: 8px;
-}
-
-.song-info h3 {
-    margin: 0;
-    font-size: 16px;
-    color: #222;
-}
-
-.song-info p {
-    margin: 2px 0 0;
-    font-size: 14px;
-    color: #666;
+    margin-bottom: 20px;
 }
