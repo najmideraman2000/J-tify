@@ -28,7 +28,7 @@ public class SpotifyAuthController {
         String authUrl = SPOTIFY_AUTH_URL + "?client_id=" + clientId
                 + "&response_type=code"
                 + "&redirect_uri=" + redirectUri
-                + "&scope=user-top-read"
+                + "&scope=user-top-read user-library-modify"
                 + (returnUri != null ? "&state=" + returnUri : "");
 
         return new RedirectView(authUrl);

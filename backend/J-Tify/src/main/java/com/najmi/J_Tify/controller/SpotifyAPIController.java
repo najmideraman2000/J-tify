@@ -31,4 +31,17 @@ public class SpotifyAPIController {
         List<SpotifyTrack> tracks = apiService.getTopTracks(timeRange);
         return ResponseEntity.ok(tracks);
     }
+
+    @PostMapping("/save-track")
+    public ResponseEntity<String> saveTrack(@RequestHeader("Authorization") String authorizationHeader,
+                                            @RequestParam("trackId") String trackId) {
+        String accessToken = authorizationHeader.replace("Bearer ", ""); // Extract token
+        boolean success = apiService.saveTrack(accessToken, trackId);
+
+        if (success) {
+            return ResponseEntity.ok("Track saved successfully!");
+        } else {
+            return ResponseEntity.badRequest().body("Failed to save track.");
+        }
+    }
 }

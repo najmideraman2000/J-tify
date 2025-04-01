@@ -20,6 +20,8 @@ public class SpotifyAPIService {
     @Autowired
     private RestTemplate restTemplate;
 
+    private static final String SPOTIFY_SAVE_TRACK_URL = "https://api.spotify.com/v1/me/tracks";
+
     public List<SpotifyTrack> getTopTracks(String timeRange) {
         List<SpotifyTrack> jPopTracks = new ArrayList<>();
         String accessToken = authService.getAccessToken();
@@ -45,6 +47,28 @@ public class SpotifyAPIService {
         }
 
         return jPopTracks.size() > 10 ? jPopTracks.subList(0, 10) : jPopTracks;
+    }
+
+    public boolean saveTrack(String accessToken, String trackId) {
+        if (accessToken == null || accessToken.isEmpty()) {
+            return false;
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + accessToken);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        String requestBody = "{\"ids\": [\"" + trackId + "\"]}";
+        HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                SPOTIFY_SAVE_TRACK_URL,
+                HttpMethod.PUT,
+                requestEntity,
+                String.class
+        );
+
+        return response.getStatusCode() == HttpStatus.OK;
     }
 
     private List<SpotifyTrack> parseTracks(String responseBody, String accessToken) {
@@ -80,13 +104,14 @@ public class SpotifyAPIService {
                 String artistId = artists.get(0).path("id").asText();
                 if (!jPopArtistIds.contains(artistId)) continue;
 
+                String trackId = trackNode.path("id").asText();  // Extract track ID
                 String trackName = trackNode.path("name").asText();
                 String artistName = artistNameMap.get(artistId);
 
                 JsonNode albumImages = trackNode.path("album").path("images");
                 String albumImageUrl = !albumImages.isEmpty() ? albumImages.get(0).path("url").asText() : "";
 
-                jPopTracks.add(new SpotifyTrack(trackName, artistName, albumImageUrl));
+                jPopTracks.add(new SpotifyTrack(trackId, trackName, artistName, albumImageUrl));
             }
         } catch (Exception e) {
             throw new RuntimeException("Error parsing Spotify response", e);

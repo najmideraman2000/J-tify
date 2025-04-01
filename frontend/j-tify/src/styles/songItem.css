@@ -8,11 +8,7 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
     cursor: pointer;
-}
-
-.song-item:hover {
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    transform: translateY(-5px);
+    position: relative;
 }
 
 .song-item img {
@@ -26,7 +22,8 @@
     display: flex;
     flex-direction: column;
     gap: 5px;
-    text-align: left; 
+    text-align: left;
+    flex-grow: 1; 
 }
 
 .song-info h3 {
@@ -34,23 +31,30 @@
     font-size: 18px;
     font-weight: 600;
     color: #333;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-    text-align: left; 
 }
 
 .song-info p {
     margin: 0;
     font-size: 14px;
     color: #777;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-    text-align: left; 
 }
 
-.song-info h3:hover {
-    color: #007bff;
-    text-decoration: underline;
+.save-button {
+    background-color: #1DB954;
+    color: white;
+    font-size: 18px;
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.save-button:hover {
+    background-color: #18a349;
+    transform: scale(1.1);
 }
