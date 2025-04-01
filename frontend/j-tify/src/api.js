@@ -18,7 +18,7 @@ export const saveTrack = async (trackId) => {
     }
 
     try {
-        const response = await fetch(`http://localhost:8080/api/spotify/save-track?trackId=${trackId}`, {
+        const response = await fetch(`http://localhost:8080/save-track?trackId=${trackId}`, {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${accessToken}`
@@ -39,21 +39,39 @@ export const saveTrack = async (trackId) => {
     }
 };
 
-const saveArtist = async () => {
+export const fetchTopJPopArtists = async (timeRange = "medium_term") => {
+    try {
+        const token = localStorage.getItem("spotifyAccessToken");
+        const response = await fetch(`http://localhost:8080/top-jpop-artists?time_range=${timeRange}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) throw new Error("Failed to fetch artists");
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching artists:", error);
+        return [];
+    }
+};
+
+export const saveArtist = async (artistId) => {
+    const accessToken = localStorage.getItem("spotifyAccessToken");
+
     if (!accessToken) {
         alert("You need to log in to save artists!");
-        return;
+        return false;
     }
 
-    if (!artist.id) {
-        console.error("Artist ID is undefined:", artist);
+    if (!artistId) {
+        console.error("Artist ID is undefined:", artistId);
         alert("Error: Artist ID is missing.");
-        return;
+        return false;
     }
 
     try {
-        console.log(accessToken);
-        const response = await fetch(`http://localhost:8080/save-artist?artistId=${artist.id}`, {
+        const response = await fetch(`http://localhost:8080/save-artist?artistId=${artistId}`, {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${accessToken}`
@@ -61,12 +79,15 @@ const saveArtist = async () => {
         });
 
         if (response.status === 204) {
-            alert(`Saved "${artist.name}" to your library!`);
+            alert(`Saved artist to your library!`);
+            return true;
         } else {
             alert("Failed to save artist. Try again!");
+            return false;
         }
     } catch (error) {
         console.error("Error saving artist:", error);
         alert("An error occurred while saving the artist.");
+        return false;
     }
 };
