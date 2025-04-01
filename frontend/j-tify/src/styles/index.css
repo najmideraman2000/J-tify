@@ -39,26 +39,25 @@ option {
 }
 
 button {
-    width: 80%;
+    width: 50%; 
     padding: 12px;
     font-size: 18px;
     color: white;
-    background-color: #1DB954; 
+    background-color: #1DB954;
     border: none;
-    border-radius: 50px; 
+    border-radius: 50px;
     cursor: pointer;
     transition: all 0.3s ease;
-    margin: 20px 0;
 }
 
 button:hover {
     background-color: #1ed760;
-    transform: translateY(-2px); 
+    transform: translateY(-2px);
 }
 
 button:active {
-    background-color: #1aa34a; 
-    transform: translateY(1px); 
+    background-color: #1aa34a;
+    transform: translateY(1px);
 }
 
 button:focus {
@@ -67,4 +66,80 @@ button:focus {
 
 button i {
     margin-right: 10px;
+}
+
+.button-container {
+    display: flex;
+    width: 100%;
+    border-radius: 50px;
+    overflow: hidden;
+    position: relative; 
+}
+
+.button-container button {
+    width: 50%; 
+    padding: 12px 0;
+    font-size: 16px;
+    background-color: #1DB954;
+    color: white;
+    border: none;
+    border-radius: 0; 
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.button-container button:first-child {
+    border-right: 2px solid #333; 
+}
+
+.button-container button:first-child:hover {
+    border-right-color: #1ed760; 
+}
+
+.button-container button:first-child:active {
+    border-right-color: #1aa34a;
+}
+
+.button-container button:first-child:focus {
+    border-right-color: #007bff;
+}
+
+.button-container button:first-child i {
+    margin-right: 10px;
+}
+
+.button-container button:hover {
+    background-color: #1ed760;
+    transform: translateY(-2px);
+}
+
+.button-container button:active {
+    background-color: #1aa34a;
+    transform: translateY(1px);
+}
+
+.button-container button:focus {
+    outline: 3px solid #007bff;
+}
+
+.tabs {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.tabs button {
+    padding: 10px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+.tabs button.active {
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+
+.tabs button:hover {
+    background-color: #e0e0e0;
 }

@@ -1,6 +1,7 @@
 package com.najmi.j_tify.controller;
 
 import com.najmi.j_tify.model.SpotifyTrack;
+import com.najmi.j_tify.model.SpotifyArtist;
 import com.najmi.j_tify.service.SpotifyAPIService;
 import com.najmi.j_tify.service.SpotifyAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,18 @@ public class SpotifyAPIController {
         return ResponseEntity.ok(tracks);
     }
 
+    @GetMapping("/top-jpop-artists")
+    public ResponseEntity<List<SpotifyArtist>> getTopJPopArtists(@RequestParam(value = "time_range", defaultValue = "medium_term") String timeRange) {
+        String accessToken = authService.getAccessToken();
+
+        if (accessToken == null || accessToken.isEmpty()) {
+            return ResponseEntity.status(401).body(null);
+        }
+
+        List<SpotifyArtist> artists = apiService.getTopArtists(timeRange);
+        return ResponseEntity.ok(artists);
+    }
+
     @PostMapping("/save-track")
     public ResponseEntity<String> saveTrack(@RequestHeader("Authorization") String authorizationHeader,
                                             @RequestParam("trackId") String trackId) {
@@ -42,6 +55,22 @@ public class SpotifyAPIController {
             return ResponseEntity.ok("Track saved successfully!");
         } else {
             return ResponseEntity.badRequest().body("Failed to save track.");
+        }
+    }
+
+    @PostMapping("/save-artist")
+    public ResponseEntity<Void> saveArtist(@RequestHeader("Authorization") String authorizationHeader,
+                                           @RequestParam("artistId") String artistId) {
+        String accessToken = authorizationHeader.replace("Bearer ", ""); // Extract token
+        System.out.println(artistId);
+        boolean success = apiService.saveArtist(accessToken, artistId); // Call service to save artist
+
+        if (success) {
+            System.out.println("Artist saved successfully!");
+            return ResponseEntity.noContent().build(); // Return 204 No Content on success
+        } else {
+            System.out.println("Failed to save artist.");
+            return ResponseEntity.badRequest().body(null); // Return 400 Bad Request on failure
         }
     }
 }

@@ -1,0 +1,60 @@
+.artist-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: #fff;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+.artist-item img {
+    width: 70px;
+    height: 70px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.artist-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    text-align: left;
+    flex-grow: 1;
+}
+
+.artist-info h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.artist-info p {
+    margin: 0;
+    font-size: 14px;
+    color: #777;
+}
+
+.save-button {
+    background-color: #1DB954;
+    color: white;
+    font-size: 18px;
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.save-button:hover {
+    background-color: #18a349;
+    transform: scale(1.1);
+}
