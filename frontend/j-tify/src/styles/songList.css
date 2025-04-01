@@ -1,7 +1,24 @@
-/* Song List Container */
 .song-list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    padding: 10px;
+    gap: 15px;
+    padding: 20px;
+    max-height: 80vh; 
+    overflow-y: auto; 
+    background-color: #f9f9f9; 
+    border-radius: 12px; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+}
+
+.song-list::-webkit-scrollbar {
+    width: 8px; 
+}
+
+.song-list::-webkit-scrollbar-thumb {
+    background: #1db954; 
+    border-radius: 10px;
+}
+
+.song-list::-webkit-scrollbar-track {
+    background: #e6e6e6; 
 }
