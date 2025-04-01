@@ -3,23 +3,28 @@ import { fetchJPopSongs } from "../api";
 import SongItem from "./SongItem";
 import "../styles/songList.css";
 
-const SongList = () => {
+const SongList = ({ timeRange }) => {
     const [songs, setSongs] = useState([]);
+    const [loading, setLoading] = useState(true); // Track loading state
 
     useEffect(() => {
         const getSongs = async () => {
-            const data = await fetchJPopSongs();
+            setLoading(true); // Set loading to true when fetching starts
+            const data = await fetchJPopSongs(timeRange);
             setSongs(data);
+            setLoading(false); // Set loading to false after fetching
         };
+
         getSongs();
-    }, []);
+    }, [timeRange]);
 
     return (
         <div className="song-list">
             <h2>Top 10 J-Pop Songs</h2>
-            {songs.length === 0 ? <p>Loading...</p> : songs.map((song, index) => (
-                <SongItem key={index} song={song} />
-            ))}
+            {loading ? <p>Loading...</p> : (
+                songs.length === 0 ? <p>No J-Pop songs found.</p> :
+                songs.map((song, index) => <SongItem key={index} song={song} />)
+            )}
         </div>
     );
 };

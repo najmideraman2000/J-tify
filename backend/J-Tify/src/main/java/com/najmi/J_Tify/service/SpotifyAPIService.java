@@ -16,17 +16,16 @@ public class SpotifyAPIService {
     @Autowired
     private SpotifyAuthService authService;
 
-    public List<SpotifyTrack> getTopTracks() {
-        String url = "https://api.spotify.com/v1/me/top/tracks?limit=30&time_range=short_term";
+    public List<SpotifyTrack> getTopTracks(String timeRange) {
+        String url = "https://api.spotify.com/v1/me/top/tracks?limit=30&time_range=" + timeRange;
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
-        System.out.println(authService.getAccessToken());
         headers.set("Authorization", "Bearer " + authService.getAccessToken());
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-        System.out.println(response.getBody());
+
         return parseTracks(response.getBody(), authService.getAccessToken());
     }
 
@@ -40,7 +39,7 @@ public class SpotifyAPIService {
             JsonNode items = root.path("items");
 
             for (JsonNode trackNode : items) {
-                if (jPopTracks.size() >= 10) break; // Stop if we have 10 tracks
+                if (jPopTracks.size() >= 10) break;
 
                 String name = trackNode.path("name").asText();
                 JsonNode artists = trackNode.path("artists");
@@ -50,10 +49,8 @@ public class SpotifyAPIService {
                 String artistName = artists.get(0).path("name").asText();
                 String artistId = artists.get(0).path("id").asText();
 
-                // Fetch artist details (for genre check)
                 if (!isJPopArtist(artistId, accessToken, restTemplate)) continue;
 
-                // Extract album image
                 JsonNode albumImages = trackNode.path("album").path("images");
                 String albumImageUrl = !albumImages.isEmpty() ? albumImages.get(0).path("url").asText() : "";
 
@@ -63,7 +60,7 @@ public class SpotifyAPIService {
             throw new RuntimeException("Error parsing Spotify response", e);
         }
 
-        return jPopTracks; // Return exactly 10 J-Pop tracks or fewer if not available
+        return jPopTracks;
     }
 
     private boolean isJPopArtist(String artistId, String accessToken, RestTemplate restTemplate) {
@@ -80,7 +77,7 @@ public class SpotifyAPIService {
             JsonNode genres = artistJson.path("genres");
             for (JsonNode genre : genres) {
                 if (genre.asText().toLowerCase().contains("j-pop")) {
-                    return true; // If "j-pop" is found in genres
+                    return true;
                 }
             }
         } catch (Exception e) {

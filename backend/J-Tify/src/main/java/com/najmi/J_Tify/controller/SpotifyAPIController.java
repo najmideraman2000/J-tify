@@ -3,9 +3,8 @@ package com.najmi.j_tify.controller;
 import com.najmi.j_tify.model.SpotifyTrack;
 import com.najmi.j_tify.service.SpotifyAPIService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -16,7 +15,7 @@ public class SpotifyAPIController {
     private SpotifyAPIService apiService;
 
     @GetMapping("/top-jpop")
-    public List<SpotifyTrack> getTopJPopTracks() {
-        return apiService.getTopTracks();
+    public List<SpotifyTrack> getTopJPopTracks(@RequestParam(value = "time_range", defaultValue = "medium_term") String timeRange) {
+        return apiService.getTopTracks(timeRange);
     }
 }
