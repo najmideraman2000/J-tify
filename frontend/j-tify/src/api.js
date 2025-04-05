@@ -26,7 +26,6 @@ export const saveTrack = async (trackId) => {
         });
 
         if (response.ok) {
-            alert("Track saved successfully!");
             return true;
         } else {
             alert("Failed to save track. Try again!");
@@ -79,7 +78,6 @@ export const saveArtist = async (artistId) => {
         });
 
         if (response.status === 204) {
-            alert(`Saved artist to your library!`);
             return true;
         } else {
             alert("Failed to save artist. Try again!");
