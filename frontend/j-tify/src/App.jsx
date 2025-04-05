@@ -6,12 +6,11 @@ import ArtistList from "./components/ArtistList";
 
 const App = () => {
     const [timeRange, setTimeRange] = useState("medium_term");
-    const [view, setView] = useState("songs");
-    const [isLoggedIn, setIsLoggedIn] = useState(false); // Track login state
+    const [view, setView] = useState("songs"); 
     const navigate = useNavigate();
 
     const redirectToLogin = () => {
-        window.location.href = "http://localhost:8080/login?redirect_uri=http://localhost:5173/top-jpop";
+        window.location.href = "http://localhost:8080/login?redirect_uri=http://localhost:5173/top-jpop-tracks";
     };
 
     useEffect(() => {
@@ -20,14 +19,11 @@ const App = () => {
 
         if (token) {
             localStorage.setItem("spotifyAccessToken", token);
-            setIsLoggedIn(true);
             navigate("/"); 
         } else {
             const storedToken = localStorage.getItem("spotifyAccessToken");
             if (!storedToken) {
                 redirectToLogin();
-            } else {
-                setIsLoggedIn(true); // Already logged in
             }
         }
     }, [navigate]);
@@ -35,12 +31,8 @@ const App = () => {
     return (
         <div className="app-container">
             <h2>Top J-Pop {view === "songs" ? "Songs" : "Artists"}</h2>
-
-            {/* Only show login button if not logged in */}
-            {!isLoggedIn && (
-                <button onClick={redirectToLogin}>Login to Spotify</button>
-            )}
-
+            <button onClick={redirectToLogin}>Login to Spotify</button>
+            
             <select onChange={(e) => setTimeRange(e.target.value)} value={timeRange}>
                 <option value="long_term">Past 1 Year</option>
                 <option value="medium_term">Past 6 Months</option>

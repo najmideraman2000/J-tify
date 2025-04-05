@@ -1,10 +1,21 @@
-export const fetchJPopSongs = async (timeRange = "medium_term") => {
+export const fetchTopJPopSongs = async (timeRange = "medium_term") => {
     try {
-        const response = await fetch(`http://localhost:8080/top-jpop?time_range=${timeRange}`);
+        const response = await fetch(`http://localhost:8080/top-jpop-tracks?time_range=${timeRange}`);
         if (!response.ok) throw new Error("Failed to fetch songs");
         return await response.json();
     } catch (error) {
         console.error("Error fetching songs:", error);
+        return [];
+    }
+};
+
+export const fetchTopJPopArtists = async (timeRange = "medium_term") => {
+    try {
+        const response = await fetch(`http://localhost:8080/top-jpop-artists?time_range=${timeRange}`);
+        if (!response.ok) throw new Error("Failed to fetch artists");
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching artists:", error);
         return [];
     }
 };
@@ -14,6 +25,11 @@ export const saveTrack = async (trackId) => {
 
     if (!accessToken) {
         alert("You need to log in to save tracks!");
+        return false;
+    }
+
+    if (!trackId) {
+        console.error("Track ID is undefined:", artistId);
         return false;
     }
 
@@ -38,22 +54,6 @@ export const saveTrack = async (trackId) => {
     }
 };
 
-export const fetchTopJPopArtists = async (timeRange = "medium_term") => {
-    try {
-        const token = localStorage.getItem("spotifyAccessToken");
-        const response = await fetch(`http://localhost:8080/top-jpop-artists?time_range=${timeRange}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-
-        if (!response.ok) throw new Error("Failed to fetch artists");
-        return await response.json();
-    } catch (error) {
-        console.error("Error fetching artists:", error);
-        return [];
-    }
-};
 
 export const saveArtist = async (artistId) => {
     const accessToken = localStorage.getItem("spotifyAccessToken");
@@ -65,12 +65,11 @@ export const saveArtist = async (artistId) => {
 
     if (!artistId) {
         console.error("Artist ID is undefined:", artistId);
-        alert("Error: Artist ID is missing.");
         return false;
     }
 
     try {
-        const response = await fetch(`http://localhost:8080/save-artist?artistId=${artistId}`, {
+        const response = await fetch(`http://localhost:8080/follow-artist?artistId=${artistId}`, {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${accessToken}`
@@ -87,5 +86,36 @@ export const saveArtist = async (artistId) => {
         console.error("Error saving artist:", error);
         alert("An error occurred while saving the artist.");
         return false;
+    }
+};
+
+export const startPlayback = async (trackId) => {
+    const accessToken = localStorage.getItem("spotifyAccessToken");
+    if (!accessToken) {
+        alert("You need to log in to play music!");
+        return;
+    }
+
+    if (!trackId) {
+        console.error("Track ID is undefined:", artistId);
+        return false;
+    }
+
+    try {
+        const response = await fetch(`http://localhost:8080/start-resume-playback?trackId=${trackId}`, {
+            method: "PUT",
+            headers: {
+                "Authorization": `Bearer ${accessToken}`
+            }
+        });
+
+        if (response.ok) {
+            alert("Playback started or resumed!");
+        } else {
+            alert("Failed to start or resume playback.");
+        }
+    } catch (error) {
+        console.error("Error starting playback:", error);
+        alert("An error occurred while trying to play music.");
     }
 };

@@ -28,7 +28,7 @@ public class SpotifyAuthController {
         String authUrl = SPOTIFY_AUTH_URL + "?client_id=" + clientId
                 + "&response_type=code"
                 + "&redirect_uri=" + redirectUri
-                + "&scope=user-top-read user-library-modify user-follow-modify" // Added user-follow-modify scope
+                + "&scope=user-top-read user-library-modify user-follow-modify user-modify-playback-state"
                 + (returnUri != null ? "&state=" + returnUri : "");
 
         return new RedirectView(authUrl);
@@ -39,6 +39,6 @@ public class SpotifyAuthController {
                                  @RequestParam(value = "state", required = false) String returnUri) {
         String token = spotifyAuthService.exchangeCodeForToken(code);
 
-        return new RedirectView(returnUri != null ? returnUri + "?access_token=" + token : "/top-jpop");
+        return new RedirectView(returnUri != null ? returnUri + "?access_token=" + token : "/top-jpop-tracks");
     }
 }

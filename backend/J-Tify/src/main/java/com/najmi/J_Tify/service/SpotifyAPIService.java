@@ -21,8 +21,11 @@ public class SpotifyAPIService {
     @Autowired
     private RestTemplate restTemplate;
 
+    private static final String SPOTIFY_TOP_TRACKS_URL =  "https://api.spotify.com/v1/me/top/tracks";
     private static final String SPOTIFY_TOP_ARTISTS_URL = "https://api.spotify.com/v1/me/top/artists";
     private static final String SPOTIFY_SAVE_TRACK_URL = "https://api.spotify.com/v1/me/tracks";
+    private static final String SPOTIFY_FOLLOW_ARTIST_URL = "https://api.spotify.com/v1/me/following?type=artist";
+    private static final String SPOTIFY_PLAYBACK_URL = "https://api.spotify.com/v1/me/player/play";
 
     public List<SpotifyTrack> getTopTracks(String timeRange) {
         List<SpotifyTrack> jPopTracks = new ArrayList<>();
@@ -31,12 +34,17 @@ public class SpotifyAPIService {
         int offset = 0;
 
         while (jPopTracks.size() < 10) {
-            String url = "https://api.spotify.com/v1/me/top/tracks?limit=15&offset=" + offset + "&time_range=" + timeRange;
+            String url = SPOTIFY_TOP_TRACKS_URL + "?limit=15&offset=" + offset + "&time_range=" + timeRange;
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", "Bearer " + accessToken);
 
             HttpEntity<String> entity = new HttpEntity<>(headers);
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+            ResponseEntity<String> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    entity,
+                    String.class
+            );
 
             List<SpotifyTrack> batchTracks = parseTracks(response.getBody(), accessToken);
             jPopTracks.addAll(batchTracks);
@@ -54,15 +62,20 @@ public class SpotifyAPIService {
     public List<SpotifyArtist> getTopArtists(String timeRange) {
         List<SpotifyArtist> topArtists = new ArrayList<>();
         String accessToken = authService.getAccessToken();
-
         int offset = 0;
+
         while (topArtists.size() < 10) {
             String url = SPOTIFY_TOP_ARTISTS_URL + "?limit=15&offset=" + offset + "&time_range=" + timeRange;
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", "Bearer " + accessToken);
 
             HttpEntity<String> entity = new HttpEntity<>(headers);
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+            ResponseEntity<String> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    entity,
+                    String.class
+            );
 
             List<SpotifyArtist> batchArtists = parseArtists(response.getBody());
             topArtists.addAll(batchArtists);
@@ -86,20 +99,27 @@ public class SpotifyAPIService {
         headers.set("Authorization", "Bearer " + accessToken);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        String requestBody = "{\"ids\": [\"" + trackId + "\"]}";
+        String requestBody = "{}";
+        if (trackId != null && !trackId.isEmpty()) {
+            requestBody = "{\"ids\": [\"" + trackId + "\"]}";
+        }
         HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
 
-        ResponseEntity<String> response = restTemplate.exchange(
-                SPOTIFY_SAVE_TRACK_URL,
-                HttpMethod.PUT,
-                requestEntity,
-                String.class
-        );
-
-        return response.getStatusCode() == HttpStatus.OK;
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(
+                    SPOTIFY_SAVE_TRACK_URL,
+                    HttpMethod.PUT,
+                    requestEntity,
+                    String.class
+            );
+            return response.getStatusCode() == HttpStatus.OK;
+        } catch (Exception e) {
+            System.err.println("Error on saving track: " + e.getMessage());
+            return false;
+        }
     }
 
-    public boolean saveArtist(String accessToken, String artistId) {
+    public boolean followArtist(String accessToken, String artistId) {
         if (accessToken == null || accessToken.isEmpty()) {
             return false;
         }
@@ -108,19 +128,54 @@ public class SpotifyAPIService {
         headers.set("Authorization", "Bearer " + accessToken);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        String requestBody = "{\"ids\": [\"" + artistId + "\"]}";
+        String requestBody = "{}";
+        if (artistId != null && !artistId.isEmpty()) {
+            requestBody = "{\"ids\": [\"" + artistId + "\"]}";
+        }
         HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
 
-        ResponseEntity<String> response = restTemplate.exchange(
-                "https://api.spotify.com/v1/me/following?type=artist",
-                HttpMethod.PUT,
-                requestEntity,
-                String.class
-        );
-
-        return response.getStatusCode() == HttpStatus.NO_CONTENT;
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(
+                    SPOTIFY_FOLLOW_ARTIST_URL,
+                    HttpMethod.PUT,
+                    requestEntity,
+                    String.class
+            );
+            return response.getStatusCode() == HttpStatus.NO_CONTENT;
+        } catch (Exception e) {
+            System.err.println("Error on following artist: " + e.getMessage());
+            return false;
+        }
     }
 
+    public boolean startOrResumePlayback(String accessToken, String trackId) {
+        if (accessToken == null || accessToken.isEmpty()) {
+            return false;
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + accessToken);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        String requestBody = "{}";
+        if (trackId != null && !trackId.isEmpty()) {
+            requestBody = "{\"uris\": [\"spotify:track:" + trackId + "\"]}";
+        }
+        HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(
+                    SPOTIFY_PLAYBACK_URL,
+                    HttpMethod.PUT,
+                    requestEntity,
+                    String.class
+            );
+            return response.getStatusCode() == HttpStatus.NO_CONTENT;
+        } catch (Exception e) {
+            System.err.println("Error starting or resuming playback: " + e.getMessage());
+            return false;
+        }
+    }
 
     private List<SpotifyTrack> parseTracks(String responseBody, String accessToken) {
         List<SpotifyTrack> jPopTracks = new ArrayList<>();
@@ -155,7 +210,7 @@ public class SpotifyAPIService {
                 String artistId = artists.get(0).path("id").asText();
                 if (!jPopArtistIds.contains(artistId)) continue;
 
-                String trackId = trackNode.path("id").asText();  // Extract track ID
+                String trackId = trackNode.path("id").asText();
                 String trackName = trackNode.path("name").asText();
                 String artistName = artistNameMap.get(artistId);
 

@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { fetchJPopSongs } from "../api";
+import { fetchTopJPopSongs } from "../api";
 import SongItem from "./SongItem";
 import "../styles/songList.css";
 
 const SongList = ({ timeRange }) => {
     const [songs, setSongs] = useState([]);
-    const [loading, setLoading] = useState(true); // Track loading state
+    const [loading, setLoading] = useState(true); 
 
     useEffect(() => {
         const getSongs = async () => {
-            setLoading(true); // Set loading to true when fetching starts
-            const data = await fetchJPopSongs(timeRange);
+            setLoading(true); 
+            const data = await fetchTopJPopSongs(timeRange);
             setSongs(data);
-            setLoading(false); // Set loading to false after fetching
+            setLoading(false); 
         };
 
         getSongs();

@@ -5,6 +5,7 @@ import com.najmi.j_tify.model.SpotifyArtist;
 import com.najmi.j_tify.service.SpotifyAPIService;
 import com.najmi.j_tify.service.SpotifyAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
@@ -21,12 +22,12 @@ public class SpotifyAPIController {
     @Autowired
     private SpotifyAuthService authService;
 
-    @GetMapping("/top-jpop")
+    @GetMapping("/top-jpop-tracks")
     public Object getTopJPopTracks(@RequestParam(value = "time_range", defaultValue = "medium_term") String timeRange) {
         String accessToken = authService.getAccessToken();
 
         if (accessToken == null || accessToken.isEmpty()) {
-            return new RedirectView("/login?redirect_uri=/top-jpop");
+            return new RedirectView("/login?redirect_uri=/top-jpop-tracks");
         }
 
         List<SpotifyTrack> tracks = apiService.getTopTracks(timeRange);
@@ -48,7 +49,7 @@ public class SpotifyAPIController {
     @PostMapping("/save-track")
     public ResponseEntity<String> saveTrack(@RequestHeader("Authorization") String authorizationHeader,
                                             @RequestParam("trackId") String trackId) {
-        String accessToken = authorizationHeader.replace("Bearer ", ""); // Extract token
+        String accessToken = authorizationHeader.replace("Bearer ", "");
         boolean success = apiService.saveTrack(accessToken, trackId);
 
         if (success) {
@@ -58,19 +59,29 @@ public class SpotifyAPIController {
         }
     }
 
-    @PostMapping("/save-artist")
-    public ResponseEntity<Void> saveArtist(@RequestHeader("Authorization") String authorizationHeader,
-                                           @RequestParam("artistId") String artistId) {
-        String accessToken = authorizationHeader.replace("Bearer ", ""); // Extract token
-        System.out.println(artistId);
-        boolean success = apiService.saveArtist(accessToken, artistId); // Call service to save artist
+    @PostMapping("/follow-artist")
+    public ResponseEntity<Void> followArtist(@RequestHeader("Authorization") String authorizationHeader,
+                                             @RequestParam("artistId") String artistId) {
+        String accessToken = authorizationHeader.replace("Bearer ", "");
+        boolean success = apiService.followArtist(accessToken, artistId);
 
         if (success) {
-            System.out.println("Artist saved successfully!");
-            return ResponseEntity.noContent().build(); // Return 204 No Content on success
+            return ResponseEntity.noContent().build();
         } else {
-            System.out.println("Failed to save artist.");
-            return ResponseEntity.badRequest().body(null); // Return 400 Bad Request on failure
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @PutMapping("/start-resume-playback")
+    public ResponseEntity<String> startOrResumePlayback(@RequestHeader("Authorization") String authorizationHeader,
+                                                        @RequestParam(value = "trackId", required = false) String trackId) {
+        String accessToken = authorizationHeader.replace("Bearer ", "");
+        boolean success = apiService.startOrResumePlayback(accessToken, trackId);
+
+        if (success) {
+            return ResponseEntity.ok("Playback started or resumed successfully!");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to start or resume playback.");
         }
     }
 }
