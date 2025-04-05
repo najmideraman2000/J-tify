@@ -6,16 +6,21 @@ import com.najmi.j_tify.service.SpotifyAPIService;
 import com.najmi.j_tify.service.SpotifyAuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173")
 public class SpotifyAPIController {
+
+    @Value("${frontend.url}")
+    private String frontendUrl;
 
     @Autowired
     private SpotifyAPIService apiService;
@@ -25,14 +30,12 @@ public class SpotifyAPIController {
 
     @GetMapping("/api/me")
     public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
-        // Check if the token/session is valid (e.g., stored in session or cache)
         String accessToken = (String) request.getSession().getAttribute("access_token");
 
         if (accessToken == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not logged in");
         }
 
-        // Optionally, get user info from Spotify using the token
         return ResponseEntity.ok("User is logged in");
     }
 
@@ -42,7 +45,7 @@ public class SpotifyAPIController {
         String accessToken = (String) request.getSession().getAttribute("access_token");
 
         if (accessToken == null || accessToken.isEmpty()) {
-            return new RedirectView("/login?redirect_uri=http://localhost:5173/top-jpop-tracks");
+            return new RedirectView("/login?redirect_uri=" + frontendUrl + "/top-jpop-tracks");
         }
 
         List<SpotifyTrack> tracks = apiService.getTopTracks(accessToken, timeRange);
@@ -64,15 +67,20 @@ public class SpotifyAPIController {
     }
 
     @PostMapping("/save-track")
-    public ResponseEntity<String> saveTrack(HttpServletRequest request,
-                                            @RequestParam("trackId") String trackId) {
+    public ResponseEntity<?> saveTrack(HttpServletRequest request,
+                                       @RequestParam("trackId") String trackId) {
         String accessToken = (String) request.getSession().getAttribute("access_token");
         boolean success = apiService.saveTrack(accessToken, trackId);
 
+        Map<String, Object> response = new HashMap<>();
         if (success) {
-            return ResponseEntity.ok("Track saved successfully!");
+            response.put("success", true);
+            response.put("message", "Track saved successfully!");
+            return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.badRequest().body("Failed to save track.");
+            response.put("success", false);
+            response.put("message", "Failed to save track.");
+            return ResponseEntity.badRequest().body(response);
         }
     }
 

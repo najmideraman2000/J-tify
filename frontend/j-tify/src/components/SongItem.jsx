@@ -2,7 +2,8 @@ import { saveTrack, startPlayback } from "../api";
 import "../styles/songItem.css";
 
 const SongItem = ({ song }) => {
-    const saveSong = async () => {
+    const saveSong = async (e) => {
+        e.stopPropagation();
         const success = await saveTrack(song.id);
         if (success) {
             alert(`Saved "${song.name}" to your library!`);
@@ -12,16 +13,16 @@ const SongItem = ({ song }) => {
     const handlePlaySong = async () => {
         let trackID = song.id;
         const result = await startPlayback(trackID);  
-    
+
         if (result.success) {
             return;
         }
-    
+
         if (result.noActiveDevice) {
             window.open(`https://open.spotify.com/track/${trackID}`, '_blank');
             return;
         }
-    
+
         alert("Could not start playback.");
     };    
 
