@@ -96,7 +96,7 @@ export const startPlayback = async (trackId) => {
         });
 
         if (response.status === 204) {
-            return true; 
+            return { success: true };
         }
 
         if (response.status === 401) {
@@ -104,11 +104,14 @@ export const startPlayback = async (trackId) => {
             return;
         }
 
-        if (response.status !== 204) throw new Error("Failed to play track");
+        const text = await response.text();
+        if (response.status === 404 && text.includes("NO_ACTIVE_DEVICE")) {
+            return { success: false, noActiveDevice: true };
+        }
 
-        return await response.json();
+        return { success: false };
     } catch (error) {
         console.error("Error playing track:", error);
-        return [];
+        return { success: false };
     }
 };

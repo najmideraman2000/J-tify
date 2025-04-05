@@ -146,9 +146,9 @@ public class SpotifyAPIService {
         }
     }
 
-    public boolean startOrResumePlayback(String accessToken, String trackId) {
+    public String startOrResumePlayback(String accessToken, String trackId) {
         if (accessToken == null || accessToken.isEmpty()) {
-            return false;
+            return "unauthorized";
         }
 
         HttpHeaders headers = new HttpHeaders();
@@ -159,6 +159,7 @@ public class SpotifyAPIService {
         if (trackId != null && !trackId.isEmpty()) {
             requestBody = "{\"uris\": [\"spotify:track:" + trackId + "\"]}";
         }
+
         HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
 
         try {
@@ -168,10 +169,18 @@ public class SpotifyAPIService {
                     requestEntity,
                     String.class
             );
-            return response.getStatusCode() == HttpStatus.NO_CONTENT;
+
+            if (response.getStatusCode() == HttpStatus.NO_CONTENT) {
+                return "success";
+            } else {
+                return "error";
+            }
         } catch (Exception e) {
+            if (e.getMessage().contains("NO_ACTIVE_DEVICE")) {
+                return "no_active_device";
+            }
             System.err.println("Error starting or resuming playback: " + e.getMessage());
-            return false;
+            return "error";
         }
     }
 

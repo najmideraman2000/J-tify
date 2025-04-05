@@ -11,11 +11,19 @@ const SongItem = ({ song }) => {
 
     const handlePlaySong = async () => {
         let trackID = song.id;
-        const success = await startPlayback(trackID);  
-        if (!success) {
-            alert("Could not start playback.");
+        const result = await startPlayback(trackID);  
+    
+        if (result.success) {
+            return;
         }
-    };
+    
+        if (result.noActiveDevice) {
+            window.open(`https://open.spotify.com/track/${trackID}`, '_blank');
+            return;
+        }
+    
+        alert("Could not start playback.");
+    };    
 
     return (
         <div className="song-item" onClick={handlePlaySong}>

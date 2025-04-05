@@ -41,7 +41,6 @@ public class SpotifyAuthController {
                                  HttpServletRequest request) {
         String token = spotifyAuthService.exchangeCodeForToken(code);
 
-        // Store token in the HTTP session (per-user)
         request.getSession(true).setAttribute("access_token", token);
 
         return new RedirectView(returnUri != null ? returnUri : "/top-jpop-tracks");

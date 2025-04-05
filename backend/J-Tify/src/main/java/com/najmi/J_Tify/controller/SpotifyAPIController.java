@@ -95,12 +95,13 @@ public class SpotifyAPIController {
     public ResponseEntity<String> startOrResumePlayback(HttpServletRequest request,
                                                         @RequestParam(value = "trackId", required = false) String trackId) {
         String accessToken = (String) request.getSession().getAttribute("access_token");
-        boolean success = apiService.startOrResumePlayback(accessToken, trackId);
+        String result = apiService.startOrResumePlayback(accessToken, trackId);
 
-        if (success) {
-            return ResponseEntity.ok("Playback started or resumed successfully!");
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to start or resume playback.");
-        }
+        return switch (result) {
+            case "success" -> ResponseEntity.noContent().build();
+            case "no_active_device" -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("NO_ACTIVE_DEVICE");
+            case "unauthorized" -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+            default -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to play track.");
+        };
     }
 }
