@@ -1,18 +1,36 @@
 export const fetchTopJPopSongs = async (timeRange = "medium_term") => {
     try {
-        const response = await fetch(`http://localhost:8080/top-jpop-tracks?time_range=${timeRange}`);
-        if (!response.ok) throw new Error("Failed to fetch songs");
+        const response = await fetch(`http://localhost:8080/top-jpop-tracks?time_range=${timeRange}`, {
+            credentials: "include", 
+        });
+
+        if (response.status === 401) {
+            window.location.href = `http://localhost:8080/login?redirectAfter=http://localhost:5173/top-jpop-tracks`;
+            return;
+        }
+
+        if (!response.ok) throw new Error("Failed to fetch tracks");
+
         return await response.json();
     } catch (error) {
-        console.error("Error fetching songs:", error);
+        console.error("Error fetching tracks:", error);
         return [];
     }
 };
 
 export const fetchTopJPopArtists = async (timeRange = "medium_term") => {
     try {
-        const response = await fetch(`http://localhost:8080/top-jpop-artists?time_range=${timeRange}`);
+        const response = await fetch(`http://localhost:8080/top-jpop-artists?time_range=${timeRange}`, {
+            credentials: "include", 
+        });
+
+        if (response.status === 401) {
+            window.location.href = `http://localhost:8080/login?redirectAfter=http://localhost:5173/top-jpop-tracks`;
+            return;
+        }
+
         if (!response.ok) throw new Error("Failed to fetch artists");
+
         return await response.json();
     } catch (error) {
         console.error("Error fetching artists:", error);
@@ -21,101 +39,76 @@ export const fetchTopJPopArtists = async (timeRange = "medium_term") => {
 };
 
 export const saveTrack = async (trackId) => {
-    const accessToken = localStorage.getItem("spotifyAccessToken");
-
-    if (!accessToken) {
-        alert("You need to log in to save tracks!");
-        return false;
-    }
-
-    if (!trackId) {
-        console.error("Track ID is undefined:", artistId);
-        return false;
-    }
-
     try {
         const response = await fetch(`http://localhost:8080/save-track?trackId=${trackId}`, {
             method: "POST",
-            headers: {
-                "Authorization": `Bearer ${accessToken}`
-            }
-        });
-
-        if (response.ok) {
-            return true;
-        } else {
-            alert("Failed to save track. Try again!");
-            return false;
-        }
-    } catch (error) {
-        console.error("Error saving track:", error);
-        alert("An error occurred while saving the track.");
-        return false;
-    }
-};
-
-
-export const saveArtist = async (artistId) => {
-    const accessToken = localStorage.getItem("spotifyAccessToken");
-
-    if (!accessToken) {
-        alert("You need to log in to save artists!");
-        return false;
-    }
-
-    if (!artistId) {
-        console.error("Artist ID is undefined:", artistId);
-        return false;
-    }
-
-    try {
-        const response = await fetch(`http://localhost:8080/follow-artist?artistId=${artistId}`, {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${accessToken}`
-            }
+            credentials: "include", 
         });
 
         if (response.status === 204) {
-            return true;
-        } else {
-            alert("Failed to save artist. Try again!");
-            return false;
+            return true; 
         }
+
+        if (response.status === 401) {
+            window.location.href = `http://localhost:8080/login?redirectAfter=http://localhost:5173/top-jpop-tracks`;
+            return;
+        }
+
+        if (!response.ok) throw new Error("Failed to save track");
+
+        return await response.json();
     } catch (error) {
-        console.error("Error saving artist:", error);
-        alert("An error occurred while saving the artist.");
-        return false;
+        console.error("Error saving track:", error);
+        return [];
+    }
+};
+
+export const followArtist = async (artistId) => {
+    try {
+        const response = await fetch(`http://localhost:8080/follow-artist?artistId=${artistId}`, {
+            method: "POST",
+            credentials: 'include',
+        });
+
+        if (response.status === 204) {
+            return true; 
+        }
+
+        if (response.status === 401) {
+            window.location.href = `http://localhost:8080/login?redirectAfter=http://localhost:5173/top-jpop-tracks`;
+            return;
+        }
+
+        if (response.status !== 204) throw new Error("Failed to follow artist");
+
+        return await response.json();
+    } catch (error) {
+        console.error("Error following artist:", error);
+        return [];
     }
 };
 
 export const startPlayback = async (trackId) => {
-    const accessToken = localStorage.getItem("spotifyAccessToken");
-    if (!accessToken) {
-        alert("You need to log in to play music!");
-        return;
-    }
-
-    if (!trackId) {
-        console.error("Track ID is undefined:", artistId);
-        return false;
-    }
-
     try {
         const response = await fetch(`http://localhost:8080/start-resume-playback?trackId=${trackId}`, {
             method: "PUT",
-            headers: {
-                "Authorization": `Bearer ${accessToken}`
-            }
+            credentials: 'include',
         });
 
-        if (response.ok) {
-            alert("Playback started or resumed!");
-        } else {
-            alert("Failed to start or resume playback.");
+        if (response.status === 204) {
+            return true; 
         }
+
+        if (response.status === 401) {
+            window.location.href = `http://localhost:8080/login?redirectAfter=http://localhost:5173/top-jpop-tracks`;
+            return;
+        }
+
+        if (response.status !== 204) throw new Error("Failed to play track");
+
+        return await response.json();
     } catch (error) {
-        console.error("Error starting playback:", error);
-        alert("An error occurred while trying to play music.");
+        console.error("Error playing track:", error);
+        return [];
     }
 };

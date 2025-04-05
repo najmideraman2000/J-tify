@@ -27,9 +27,8 @@ public class SpotifyAPIService {
     private static final String SPOTIFY_FOLLOW_ARTIST_URL = "https://api.spotify.com/v1/me/following?type=artist";
     private static final String SPOTIFY_PLAYBACK_URL = "https://api.spotify.com/v1/me/player/play";
 
-    public List<SpotifyTrack> getTopTracks(String timeRange) {
+    public List<SpotifyTrack> getTopTracks(String accessToken, String timeRange) {
         List<SpotifyTrack> jPopTracks = new ArrayList<>();
-        String accessToken = authService.getAccessToken();
         RestTemplate restTemplate = new RestTemplate();
         int offset = 0;
 
@@ -59,9 +58,8 @@ public class SpotifyAPIService {
         return jPopTracks.size() > 10 ? jPopTracks.subList(0, 10) : jPopTracks;
     }
 
-    public List<SpotifyArtist> getTopArtists(String timeRange) {
+    public List<SpotifyArtist> getTopArtists(String accessToken, String timeRange) {
         List<SpotifyArtist> topArtists = new ArrayList<>();
-        String accessToken = authService.getAccessToken();
         int offset = 0;
 
         while (topArtists.size() < 10) {

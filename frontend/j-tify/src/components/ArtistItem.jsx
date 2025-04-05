@@ -1,10 +1,10 @@
 import React from "react";
-import { saveArtist } from "../api"; 
+import { followArtist } from "../api"; 
 import "../styles/artistItem.css";
 
 const ArtistItem = ({ artist }) => {
-    const saveArtistData = async () => {
-        const success = await saveArtist(artist.id);
+    const followArtistData = async () => {
+        const success = await followArtist(artist.id);
         if (success) {
             alert(`Saved "${artist.name}" to your library!`);
         }
@@ -16,7 +16,7 @@ const ArtistItem = ({ artist }) => {
             <div className="artist-info">
                 <h3>{artist.name}</h3>
             </div>
-            <button className="save-button" onClick={saveArtistData}>+</button>
+            <button className="save-button" onClick={followArtistData}>+</button>
         </div>
     );
 };

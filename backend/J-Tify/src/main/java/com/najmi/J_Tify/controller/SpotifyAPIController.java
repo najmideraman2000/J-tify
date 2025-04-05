@@ -4,6 +4,7 @@ import com.najmi.j_tify.model.SpotifyTrack;
 import com.najmi.j_tify.model.SpotifyArtist;
 import com.najmi.j_tify.service.SpotifyAPIService;
 import com.najmi.j_tify.service.SpotifyAuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,34 +23,50 @@ public class SpotifyAPIController {
     @Autowired
     private SpotifyAuthService authService;
 
-    @GetMapping("/top-jpop-tracks")
-    public Object getTopJPopTracks(@RequestParam(value = "time_range", defaultValue = "medium_term") String timeRange) {
-        String accessToken = authService.getAccessToken();
+    @GetMapping("/api/me")
+    public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
+        // Check if the token/session is valid (e.g., stored in session or cache)
+        String accessToken = (String) request.getSession().getAttribute("access_token");
 
-        if (accessToken == null || accessToken.isEmpty()) {
-            return new RedirectView("/login?redirect_uri=/top-jpop-tracks");
+        if (accessToken == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not logged in");
         }
 
-        List<SpotifyTrack> tracks = apiService.getTopTracks(timeRange);
+        // Optionally, get user info from Spotify using the token
+        return ResponseEntity.ok("User is logged in");
+    }
+
+    @GetMapping("/top-jpop-tracks")
+    public Object getTopJPopTracks(HttpServletRequest request,
+                                   @RequestParam(value = "time_range", defaultValue = "medium_term") String timeRange) {
+        String accessToken = (String) request.getSession().getAttribute("access_token");
+
+        if (accessToken == null || accessToken.isEmpty()) {
+            return new RedirectView("/login?redirect_uri=http://localhost:5173/top-jpop-tracks");
+        }
+
+        List<SpotifyTrack> tracks = apiService.getTopTracks(accessToken, timeRange);
         return ResponseEntity.ok(tracks);
     }
 
     @GetMapping("/top-jpop-artists")
-    public ResponseEntity<List<SpotifyArtist>> getTopJPopArtists(@RequestParam(value = "time_range", defaultValue = "medium_term") String timeRange) {
-        String accessToken = authService.getAccessToken();
+    public ResponseEntity<List<SpotifyArtist>> getTopJPopArtists(HttpServletRequest request,
+                                                                 @RequestParam(value = "time_range", defaultValue = "medium_term") String timeRange) {
+        String accessToken = (String) request.getSession().getAttribute("access_token");
+        System.out.println(accessToken);
 
         if (accessToken == null || accessToken.isEmpty()) {
             return ResponseEntity.status(401).body(null);
         }
 
-        List<SpotifyArtist> artists = apiService.getTopArtists(timeRange);
+        List<SpotifyArtist> artists = apiService.getTopArtists(accessToken, timeRange);
         return ResponseEntity.ok(artists);
     }
 
     @PostMapping("/save-track")
-    public ResponseEntity<String> saveTrack(@RequestHeader("Authorization") String authorizationHeader,
+    public ResponseEntity<String> saveTrack(HttpServletRequest request,
                                             @RequestParam("trackId") String trackId) {
-        String accessToken = authorizationHeader.replace("Bearer ", "");
+        String accessToken = (String) request.getSession().getAttribute("access_token");
         boolean success = apiService.saveTrack(accessToken, trackId);
 
         if (success) {
@@ -60,10 +77,12 @@ public class SpotifyAPIController {
     }
 
     @PostMapping("/follow-artist")
-    public ResponseEntity<Void> followArtist(@RequestHeader("Authorization") String authorizationHeader,
+    public ResponseEntity<Void> followArtist(HttpServletRequest request,
                                              @RequestParam("artistId") String artistId) {
-        String accessToken = authorizationHeader.replace("Bearer ", "");
+        String accessToken = (String) request.getSession().getAttribute("access_token");
+        System.out.println("hello2");
         boolean success = apiService.followArtist(accessToken, artistId);
+        System.out.println("hello");
 
         if (success) {
             return ResponseEntity.noContent().build();
@@ -73,9 +92,9 @@ public class SpotifyAPIController {
     }
 
     @PutMapping("/start-resume-playback")
-    public ResponseEntity<String> startOrResumePlayback(@RequestHeader("Authorization") String authorizationHeader,
+    public ResponseEntity<String> startOrResumePlayback(HttpServletRequest request,
                                                         @RequestParam(value = "trackId", required = false) String trackId) {
-        String accessToken = authorizationHeader.replace("Bearer ", "");
+        String accessToken = (String) request.getSession().getAttribute("access_token");
         boolean success = apiService.startOrResumePlayback(accessToken, trackId);
 
         if (success) {

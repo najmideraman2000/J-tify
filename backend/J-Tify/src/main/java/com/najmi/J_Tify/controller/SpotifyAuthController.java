@@ -1,6 +1,7 @@
 package com.najmi.j_tify.controller;
 
 import com.najmi.j_tify.service.SpotifyAuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,9 +37,13 @@ public class SpotifyAuthController {
 
     @GetMapping("/callback")
     public RedirectView callback(@RequestParam("code") String code,
-                                 @RequestParam(value = "state", required = false) String returnUri) {
+                                 @RequestParam(value = "state", required = false) String returnUri,
+                                 HttpServletRequest request) {
         String token = spotifyAuthService.exchangeCodeForToken(code);
 
-        return new RedirectView(returnUri != null ? returnUri + "?access_token=" + token : "/top-jpop-tracks");
+        // Store token in the HTTP session (per-user)
+        request.getSession(true).setAttribute("access_token", token);
+
+        return new RedirectView(returnUri != null ? returnUri : "/top-jpop-tracks");
     }
 }

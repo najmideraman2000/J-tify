@@ -20,9 +20,6 @@ public class SpotifyAuthService {
     @Value("${spotify.redirect-uri}")
     private String redirectUri;
 
-    @Getter
-    private String accessToken;
-
     private static final String SPOTIFY_TOKEN_URL =  "https://accounts.spotify.com/api/token";
 
     public String exchangeCodeForToken(String code) {
@@ -45,8 +42,7 @@ public class SpotifyAuthService {
         );
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            accessToken = (String) Objects.requireNonNull(response.getBody()).get("access_token");
-            return accessToken;
+            return (String) Objects.requireNonNull(response.getBody()).get("access_token");
         }
         return null;
     }
