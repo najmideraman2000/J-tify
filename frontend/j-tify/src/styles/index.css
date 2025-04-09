@@ -1,11 +1,15 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
 .app-container {
     width: 400px;
+    margin: 50px auto;
+    padding: 20px;
     background: white;
     border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-    padding: 20px;
     text-align: center;
-    margin: 50px auto;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 h2 {
@@ -39,15 +43,14 @@ option {
 }
 
 button {
-    margin-top: 12px;
-    margin-bottom: 12px;
-    width: 50%; 
+    margin: 12px 0;
+    width: 50%;
     padding: 12px;
     font-size: 18px;
     color: white;
     background-color: #1DB954;
     border: none;
-    border-radius: 50px;
+    border-radius: 0;
     cursor: pointer;
     transition: all 0.3s ease;
 }
@@ -63,85 +66,51 @@ button:active {
 }
 
 button:focus {
-    outline: 3px solid #007bff;
+    outline: none;
+    box-shadow: 0 0 0 3px #007bff; 
 }
 
-button i {
+button i,
+.button-container button i {
     margin-right: 10px;
 }
 
 .button-container {
+    justify-content: center;
     display: flex;
-    width: 100%;
-    border-radius: 50px;
+    width: 80%;
     overflow: hidden;
-    position: relative; 
+    border-radius: 50px;
+    position: relative;
+    margin: 10px auto;
 }
 
 .button-container button {
-    width: 50%; 
-    padding: 12px 0;
-    font-size: 16px;
-    background-color: #1DB954;
-    color: white;
-    border: none;
-    border-radius: 0; 
-    cursor: pointer;
-    transition: all 0.3s ease;
+    border-radius: 0;
 }
 
 .button-container button:first-child {
-    border-right: 2px solid #333; 
+    border-top-left-radius: 50px;
+    border-bottom-left-radius: 50px;
+    border-right: 1px solid #32a532;
+}
+
+.button-container button:last-child {
+    border-top-right-radius: 50px;
+    border-bottom-right-radius: 50px;
+    border-left: 1px solid #32a532;
 }
 
 .button-container button:first-child:hover {
-    border-right-color: #1ed760; 
+    border-right-color: #1ed760;
 }
 
 .button-container button:first-child:active {
     border-right-color: #1aa34a;
 }
 
-.button-container button:first-child:focus {
-    border-right-color: #007bff;
-}
-
-.button-container button:first-child i {
-    margin-right: 10px;
-}
-
-.button-container button:hover {
-    background-color: #1ed760;
-    transform: translateY(-2px);
-}
-
-.button-container button:active {
-    background-color: #1aa34a;
-    transform: translateY(1px);
-}
-
 .button-container button:focus {
-    outline: 3px solid #007bff;
-}
-
-.tabs {
-    margin-top: 20px;
-    margin-bottom: 20px;
-}
-
-.tabs button {
-    padding: 10px;
-    margin-right: 10px;
-    border: 1px solid #ccc;
-    background-color: #fff;
-    cursor: pointer;
-}
-
-.tabs button.active {
-    background-color: #f0f0f0;
-    font-weight: bold;
-}
-
-.tabs button:hover {
-    background-color: #e0e0e0;
+    outline: none;
+    box-shadow: 0 0 0 1.5px #32a532;
+    z-index: 1; 
 }

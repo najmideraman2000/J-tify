@@ -20,7 +20,6 @@ const SongList = ({ timeRange }) => {
 
     return (
         <div className="song-list">
-            <h2>Top 10 J-Pop Songs</h2>
             {loading ? <p>Loading...</p> : (
                 songs.length === 0 ? <p>No J-Pop songs found.</p> :
                 songs.map((song, index) => <SongItem key={index} song={song} />)

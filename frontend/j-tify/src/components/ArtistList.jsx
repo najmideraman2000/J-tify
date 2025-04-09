@@ -20,7 +20,6 @@ const ArtistList = ({ timeRange }) => {
 
     return (
         <div className="artist-list">
-            <h2>Top J-Pop Artists</h2>
             {loading ? (
                 <p>Loading...</p>
             ) : (
