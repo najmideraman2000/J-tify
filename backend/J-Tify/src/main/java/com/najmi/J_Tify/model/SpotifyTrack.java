@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class SpotifyTrack {
-    private String id;  // <-- Add this
+    private String id;
     private String name;
     private String artist;
     private String albumImageUrl;
